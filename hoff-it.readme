@@ -1,0 +1,12 @@
+Instructions for hoff-it.sh
+
+
+Get the file:
+curl -o TEST https://raw.githubusercontent.com/lykinsbd/Misc-Scripts/master/hoff-it.sh
+
+Execute the script:
+
+./hoff-it.sh
+
+
+You got em hoffed.
