@@ -1,0 +1,6 @@
+
+# Python VENV stuffs
+bin/
+include/
+lib/
+pyvenv.cfg
