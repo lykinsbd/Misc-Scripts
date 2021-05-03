@@ -8,6 +8,9 @@ It's Python2 because that's all Ubiquti OS has as of right now.
 """
 
 
+import subprocess
+
+
 def main():
     """
     Do the needful
@@ -32,8 +35,12 @@ address=/amazonaws.com/::
 """
     dnsmasq_conf_location = "/etc/dnsmasq.conf"
 
+    # Append the requsite Netflix AAAA blocks
     with open(dnsmasq_conf_location, "a") as dnsmasq_conf_file:
         dnsmasq_conf_file.write(netflix_blocks)
+    
+    # Restart DNSMasq
+    subprocess.call(["/etc/init.d/dnsmasq", "restart"])
 
 
 if __name__ == "__main__":
