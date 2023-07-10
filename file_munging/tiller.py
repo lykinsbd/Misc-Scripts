@@ -6,7 +6,7 @@ from pathlib import Path
 
 import click
 from dateutil import parser
-from dateutil.relativedelta import relativedelta, MO
+from dateutil.relativedelta import relativedelta, SU
 import rich
 
 log = logging.getLogger(__name__)
@@ -98,7 +98,7 @@ def modify(context: click.Context, account_name, account_number, csv_out, csv_in
                 case "Month":
                     tiller_csv_entry[header] = (transaction_date + relativedelta(day=1)).strftime(time_format)
                 case "Week":
-                    tiller_csv_entry[header] = (transaction_date + relativedelta(weekday=MO(-1))).strftime(time_format)
+                    tiller_csv_entry[header] = (transaction_date + relativedelta(weekday=SU(-1))).strftime(time_format)
                 case "Full Description":
                     tiller_csv_entry[header] = row[2]
                 case "Date Added":
