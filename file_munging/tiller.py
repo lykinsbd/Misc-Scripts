@@ -22,11 +22,24 @@ def tiller(context: click.Context):  # pylint: disable=unused-argument
 @click.pass_context
 @click.option("--account_name", type=click.STRING)
 @click.option("--account_number", type=click.STRING)
-@click.argument("csv_path", type=click.Path(exists=True, readable=True, path_type=Path))
-def modify(context: click.Context, account_name, account_number, csv_path: Path) -> dict:
+@click.option("--csv_out", type=click.Path())
+@click.argument("csv_in", type=click.Path(exists=True, readable=True, path_type=Path))
+def modify(context: click.Context, account_name, account_number, csv_out, csv_in: Path) -> None:
     """Modify a given CSV to be in the format expected by Tiller.
 
     Returns: Dict with the modified contents to be written or used elsewhere.
+
+    Args:
+        context (click.Context): _description_
+        account_name (_type_): _description_
+        account_number (_type_): _description_
+        csv_in (Path): _description_
+
+    Raises:
+        IOError: If the input CSV can't be parsed, raise IOError.
+
+    Returns:
+        None: Nothing.
     """
 
     tiller_headers = [
@@ -53,13 +66,14 @@ def modify(context: click.Context, account_name, account_number, csv_path: Path)
         "Status",
     ]
 
-    usaa_csv = csv.reader(csv_path.open())
+    usaa_csv = csv.reader(csv_in.open())
 
     # Validate the USAA Headers
     if next(usaa_csv) != usaa_headers:
         raise IOError(f"input CSV is not in known format, headers do not match: {usaa_headers}")
 
     # New CSV creation
+    log.info("Beginning new CSV data creation.")
     tiller_csv = []
     for row in usaa_csv:
         tiller_csv_entry = {header: "" for header in tiller_headers}
@@ -90,7 +104,18 @@ def modify(context: click.Context, account_name, account_number, csv_path: Path)
                     tiller_csv_entry[header] = datetime.datetime.now().strftime("%x")
         tiller_csv.append(tiller_csv_entry)
 
-    rich.print(tiller_csv)
+    # rich.print(tiller_csv)
+    log.debug("Created the following csv: %s", tiller_csv)
+
+    # Prepare to output the curated data
+    if csv_out is None:
+        csv_out = Path(f"{csv_in.parent}/tiller_{csv_in.name}")
+
+    log.info("Writing new CSV to %s", csv_out)
+    writer = csv.DictWriter(csv_out.open(mode="w", encoding="utf8"), fieldnames=tiller_headers)
+    writer.writeheader()
+    for row in tiller_csv:
+        writer.writerow(row)
 
 
 tiller.add_command(modify)
