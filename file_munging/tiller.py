@@ -75,13 +75,14 @@ def modify(context: click.Context, account_name, account_number, csv_out, csv_in
     # New CSV creation
     log.info("Beginning new CSV data creation.")
     tiller_csv = []
+    time_format = "%-m/%-d/%y"
     for row in usaa_csv:
         tiller_csv_entry = {header: "" for header in tiller_headers}
         transaction_date = parser.parse(row[0])
         for header in tiller_headers:
             match header:
                 case "Date":
-                    tiller_csv_entry[header] = transaction_date.strftime("%x")
+                    tiller_csv_entry[header] = transaction_date.strftime(time_format)
                 case "Description":
                     tiller_csv_entry[header] = row[1]
                 case "Category":
@@ -95,13 +96,13 @@ def modify(context: click.Context, account_name, account_number, csv_out, csv_in
                 case "Institution":
                     tiller_csv_entry[header] = "USAA"
                 case "Month":
-                    tiller_csv_entry[header] = (transaction_date + relativedelta(day=1)).strftime("%x")
+                    tiller_csv_entry[header] = (transaction_date + relativedelta(day=1)).strftime(time_format)
                 case "Week":
-                    tiller_csv_entry[header] = (transaction_date + relativedelta(weekday=MO(-1))).strftime("%x")
+                    tiller_csv_entry[header] = (transaction_date + relativedelta(weekday=MO(-1))).strftime(time_format)
                 case "Full Description":
                     tiller_csv_entry[header] = row[2]
                 case "Date Added":
-                    tiller_csv_entry[header] = datetime.datetime.now().strftime("%x")
+                    tiller_csv_entry[header] = datetime.datetime.now().strftime(time_format)
         tiller_csv.append(tiller_csv_entry)
 
     # rich.print(tiller_csv)
