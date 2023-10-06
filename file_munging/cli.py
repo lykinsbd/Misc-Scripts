@@ -8,8 +8,9 @@ from rich import traceback
 from file_munging.config import load_or_exit
 from file_munging.log import initialize_logging
 from file_munging.tiller import tiller
+from file_munging.meal_plan import meal_plan
 
-APP = "csvify"
+APP = "file_munging"
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -50,3 +51,4 @@ def main(context: click.Context, log_level, rich_logging, log_file) -> None:  # 
 
 
 main.add_command(tiller)
+main.add_command(meal_plan)
